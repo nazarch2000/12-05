@@ -15,6 +15,24 @@ from payment p, rental r, customer c, inventory i, film f
 where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and r.customer_id = c.customer_id and i.inventory_id = r.inventory_id
 
 
+-> Table scan on <temporary>  (cost=2.5..2.5 rows=0) (actual time=6646..6646 rows=391 loops=1)
+    -> Temporary table with deduplication  (cost=0..0 rows=0) (actual time=6646..6646 rows=391 loops=1)
+        -> Window aggregate with buffering: sum(payment.amount) OVER (PARTITION BY c.customer_id,f.title )   (actual time=2776..6421 rows=642000 loops=1)
+            -> Sort: c.customer_id, f.title  (actual time=2776..2863 rows=642000 loops=1)
+                -> Stream results  (cost=10.9e+6 rows=17.1e+6) (actual time=0.396..2212 rows=642000 loops=1)
+                    -> Nested loop inner join  (cost=10.9e+6 rows=17.1e+6) (actual time=0.391..1943 rows=642000 loops=1)
+                        -> Nested loop inner join  (cost=9.21e+6 rows=17.1e+6) (actual time=0.388..1672 rows=642000 loops=1)
+                            -> Nested loop inner join  (cost=7.49e+6 rows=17.1e+6) (actual time=0.382..1370 rows=642000 loops=1)
+                                -> Inner hash join (no condition)  (cost=1.65e+6 rows=16.5e+6) (actual time=0.371..70.3 rows=634000 loops=1)
+                                    -> Filter: (cast(p.payment_date as date) = '2005-07-30')  (cost=1.72 rows=16500) (actual time=0.0305..6.83 rows=634 loops=1)
+                                        -> Table scan on p  (cost=1.72 rows=16500) (actual time=0.0195..4.64 rows=16044 loops=1)
+                                    -> Hash
+                                        -> Covering index scan on f using idx_title  (cost=103 rows=1000) (actual time=0.0416..0.246 rows=1000 loops=1)
+                                -> Covering index lookup on r using rental_date (rental_date=p.payment_date)  (cost=0.25 rows=1.04) (actual time=0.0012..0.00182 rows=1.01 loops=634000)
+                            -> Single-row index lookup on c using PRIMARY (customer_id=r.customer_id)  (cost=250e-6 rows=1) (actual time=194e-6..237e-6 rows=1 loops=642000)
+                        -> Single-row covering index lookup on i using PRIMARY (inventory_id=r.inventory_id)  (cost=250e-6 rows=1) (actual time=147e-6..191e-6 rows=1 loops=642000)
+
+
 -> Table scan on <temporary>  (cost=2.5..2.5 rows=0) (actual time=58.1..58.1 rows=391 loops=1)
     -> Temporary table with deduplication  (cost=0..0 rows=0) (actual time=58.1..58.1 rows=391 loops=1)
         -> Window aggregate with buffering: sum(payment.amount) OVER (PARTITION BY c.customer_id )   (actual time=56.8..57.9 rows=634 loops=1)
