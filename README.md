@@ -13,6 +13,8 @@
 select distinct concat(c.last_name, ' ', c.first_name), sum(p.amount) over (partition by c.customer_id, f.title)
 from payment p, rental r, customer c, inventory i, film f
 where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and r.customer_id = c.customer_id and i.inventory_id = r.inventory_id
+
+
 -> Table scan on <temporary>  (cost=2.5..2.5 rows=0) (actual time=58.1..58.1 rows=391 loops=1)
     -> Temporary table with deduplication  (cost=0..0 rows=0) (actual time=58.1..58.1 rows=391 loops=1)
         -> Window aggregate with buffering: sum(payment.amount) OVER (PARTITION BY c.customer_id )   (actual time=56.8..57.9 rows=634 loops=1)
