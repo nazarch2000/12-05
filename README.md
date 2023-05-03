@@ -41,6 +41,16 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 - оптимизируйте запрос: внесите корректировки по использованию операторов, при необходимости добавьте индексы.
 ![image](https://user-images.githubusercontent.com/106932460/234908867-29b52265-dc1a-49fb-8970-6b0f103bfa03.png)
 
+```
+-> Table scan on <temporary>  (actual time=4.86..4.91 rows=391 loops=1)
+    -> Aggregate using temporary table  (actual time=4.86..4.86 rows=391 loops=1)
+        -> Nested loop inner join  (cost=581 rows=661) (actual time=0.0407..3.98 rows=642 loops=1)
+            -> Nested loop inner join  (cost=349 rows=634) (actual time=0.0272..1.44 rows=634 loops=1)
+                -> Filter: ((r.rental_date >= TIMESTAMP'2005-07-30 00:00:00') and (r.rental_date < <cache>(('2005-07-30' + interval 1 day))))  (cost=127 rows=634) (actual time=0.0188..0.461 rows=634 loops=1)
+                    -> Covering index range scan on r using rental_date over ('2005-07-30 00:00:00' <= rental_date < '2005-07-31 00:00:00')  (cost=127 rows=634) (actual time=0.0163..0.295 rows=634 loops=1)
+                -> Single-row index lookup on c using PRIMARY (customer_id=r.customer_id)  (cost=0.25 rows=1) (actual time=0.00125..0.00129 rows=1 loops=634)
+            -> Index lookup on p using pay_date (payment_date=r.rental_date)  (cost=0.261 rows=1.04) (actual time=0.003..0.00371 rows=1.01 loops=634)
+```
 ## Дополнительные задания (со звёздочкой*)
 Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
 
