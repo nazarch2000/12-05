@@ -39,8 +39,7 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 2. Обращение к таблице inventory можно убрать, оно никак не влияет на результат.
 ```
 - оптимизируйте запрос: внесите корректировки по использованию операторов, при необходимости добавьте индексы.
-![image](https://user-images.githubusercontent.com/106932460/234908867-29b52265-dc1a-49fb-8970-6b0f103bfa03.png)
-
+![image](https://user-images.githubusercontent.com/106932460/236028298-6ba5b87b-b690-4758-8236-f29af6634c30.png)
 ```
 -> Table scan on <temporary>  (actual time=4.86..4.91 rows=391 loops=1)
     -> Aggregate using temporary table  (actual time=4.86..4.86 rows=391 loops=1)
